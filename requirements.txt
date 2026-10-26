@@ -1,0 +1,19 @@
+# Direct dependencies, pinned and checked on Python 3.13 (Windows).
+fastapi==0.162.0
+uvicorn==0.54.0
+chromadb==1.5.9
+langchain==1.4.7
+langchain-core==1.7.0
+langsmith==0.14.12
+langchain-ollama==1.1.0
+ollama==0.6.3
+langchain-chroma==1.1.0
+langchain-text-splitters==1.1.3
+httpx==0.28.1
+anyio==4.15.1
+pydantic==2.14.1
+pydantic-settings==2.16.1
+python-dotenv==1.2.4
+python-multipart==0.0.32
+pytest==9.1.1
+ruff==0.17.2

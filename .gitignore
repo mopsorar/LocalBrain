@@ -1,0 +1,39 @@
+# Python environment and local caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+*.log
+
+# Only root-level .txt/.md demo files in knowledge_base may be versioned.
+/knowledge_base/*
+!/knowledge_base/*.txt
+!/knowledge_base/*.md
+/knowledge_base/private/
+
+# Private documents, persistent databases and local models
+/documents/
+/data/
+/chroma_db/
+/models/
+/.ollama/
+*.gguf
+*.safetensors
+
+# Editor and operating system artifacts
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

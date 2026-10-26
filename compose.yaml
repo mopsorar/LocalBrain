@@ -1,0 +1,67 @@
+name: localbrain
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      # Container addresses/paths must not inherit Windows paths from the local .env.
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:1.5b}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
+      OLLAMA_CONNECT_TIMEOUT: ${OLLAMA_CONNECT_TIMEOUT:-5}
+      OLLAMA_READ_TIMEOUT: ${OLLAMA_READ_TIMEOUT:-120}
+      DOCUMENTS_DIR: /app/knowledge_base
+      CHROMA_PERSIST_DIR: /app/data/chroma
+      UPLOADS_DIR: /app/documents/uploads
+      API_BASE_URL: http://127.0.0.1:8000
+      LANGSMITH_TRACING: "false"
+      LANGCHAIN_TRACING_V2: "false"
+      FASTAPI_OTEL_AUTO_CONFIGURE: "false"
+    volumes:
+      # New named volumes inherit the image directories owned by UID/GID 10001.
+      - chroma_data:/app/data/chroma
+      - uploads_data:/app/documents/uploads
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      # HTTP readiness only: no generation, embeddings or model downloads.
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://127.0.0.1:8000/openapi.json', timeout=3, trust_env=False).raise_for_status()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    mem_limit: 1g
+    cpus: 1.0
+
+  ollama:
+    image: ollama/ollama:latest
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_NO_CLOUD: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_QUEUE: "4"
+      OLLAMA_CONTEXT_LENGTH: "2048"
+      OLLAMA_KEEP_ALIVE: "0"
+    volumes:
+      # Independent of models installed in Windows Ollama.
+      - ollama_models:/root/.ollama
+    healthcheck:
+      # An empty model list is healthy; models are pulled explicitly by the user.
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 6
+    mem_limit: 3g
+    cpus: 2.0
+
+volumes:
+  chroma_data:
+  uploads_data:
+  ollama_models:

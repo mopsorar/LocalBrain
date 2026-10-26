@@ -1,0 +1,23 @@
+# Build context is an allowlist: no .env, Git, AGENTS.md, private data or caches.
+**
+!Dockerfile
+!requirements.txt
+!app/
+app/**
+!app/*.py
+!rag_bot.py
+!ingest.py
+!main.py
+!test_ollama.py
+!knowledge_base/
+knowledge_base/**
+!knowledge_base/*.txt
+!knowledge_base/*.md
+
+# Parent-directory exceptions must never re-include these artifacts.
+**/__pycache__/
+**/*.py[cod]
+**/.env
+**/.env.*
+**/AGENTS.md
+knowledge_base/private/

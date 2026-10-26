@@ -1,0 +1,1 @@
+"""LocalBrain application package."""
